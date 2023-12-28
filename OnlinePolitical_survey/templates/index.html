@@ -1,0 +1,137 @@
+{% include "header.html" %}
+<div class='language_select'>
+    <div class="container mt-3">
+    
+        <!-- Dropdown Button -->
+        <div id='select_lang' class="btn-group" style="margin-bottom:15px;">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select Language
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'change_language' option_id=1 %}">Hindi</a>
+            <a class="dropdown-item" href="{% url 'change_language' option_id=2 %}">English</a>
+          </div>
+        </div>
+    
+      </div> 
+</div>
+
+{% for i in content_data.values %}
+            <p>{{i}}</p>
+ {% endfor %}
+<div id='mobilefield'>
+<form action='reg_mobile' method='POST' onsubmit="return mobile_validation()">{% csrf_token %}
+  <p style='background-color:navy;color:white;'class='row row-alert'><b>Enter Mobile Number</b>
+  <input type="text" name='mobile'id="mobileNumber" placeholder="Enter your mobile number"  >
+  <script>
+    function mobile_validation(){
+       var mobile=document.getElementById('mobileNumber').value
+       var mobileRegex = /^\d{10}$/;
+       if (mobileRegex.test(mobile)) {
+        // Valid mobile number
+        mobile_status.style.display='None'
+        return true;
+        } else {
+        // Invalid mobile number
+        alert("Wrong Mobile number")
+        return false;
+        }
+    }
+  </script>
+  <p id='mobile_status'style='background-color:lightyellow;color:red;'>Please enter a valid mobile number with exactly 10 digits.</p>
+  </p>
+</form>
+</div>
+{% if yesMobile %}
+<script>
+mobilefield.style.display='None'
+select_lang.style.display='None'
+</script>
+<div>
+{% for i in image_list %}
+<figure>
+  <img src="{{i}}" alt="Image Description">
+  <figcaption><a href="votting?text={{i}}"><button style='border-radius:5px;'>Click here</button></a></figcaption>
+</figure>
+{% endfor %}
+</div>
+{% if grouped_data %}
+<div class="container" style="margin-top:5px;">
+  <h2 class="alert alert-success">Survey Result</h2>
+  <table class="table table-striped">
+    <thead class="custom-thead">
+      <tr >
+        <th>Party Name</th>
+        <th>Totol Votting</th>
+        <!-- Add more headers as needed -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in grouped_data %}
+      <tr>
+        <td>{{i.party_name}}</td>
+        <td>{{i.total_votes}}</td>
+        <!-- Add more data cells as needed -->
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+{% endif %}
+<a href='{% url "show_result" %}'><button class="btn btn-success">SHOW RESULT</button></a>
+{% if error %}
+
+<p class='alert alert-danger' style='margin-top:3px;'>{{error}}</p>
+{% endif %}
+</div>
+</div>
+
+<div id='chatbox'>
+  <div style='background-color:darkblue;color:white;text-align:center;height:30px;'><b>CHAT BOX</b>
+    <span style="float:right;height:20px;">
+      <form action="logout" method='POST'>{% csrf_token %}
+        <input type='Submit' value="Exit Chat Box">
+      </form>
+    </span>
+  
+  </div>
+ <div style="height:290px;background-color:#E6E6FA;overflow:scroll;">
+  {% for i in  chat_data%}
+  {% if yesMobile == i.mobile.mobile %}  
+    <div style="float:right;width:55%;margin:5px;border-radius:0px 10px 10px 10px;">
+      <div style='background-color:skyblue;border-radius:0px 10px 0px 0px;'>
+        <span style='margin-left:5px;'>{{i.mobile}}</span><span style="float:right;margin-right:5px;">{{i.date}}  {{i.time}}</span>
+      </div>
+      <div style="background-color:wheat;margin-top:-5px;">
+      <p style="margin:5px;"> {{i.Chat}}</p>
+      </div>
+    </div>
+    {% else %}
+    <div style="float:left;width:55%;margin:5px 5px 0px 30px;border-radius:0px 10px 10px 10px;">
+      <div style='background-color:skyblue;border-radius:0px 10px 0px 0px;'>
+        <span style='margin-left:5px;'>{{i.mobile}}</span><span style="float:right;margin-right:5px;">{{i.date}}  {{i.time}}</span>
+      </div>
+      <div style="background-color:wheat;margin-top:-5px;">
+      <p style="margin:5px;"> {{i.Chat}}</p>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+ </div>
+<form action="insertchat" method="POST" >{% csrf_token %}
+  <div class="input-group mb-3" style="background-color:skyblue;float:right;position:fixed;bottom:-20px;">
+    <input type="text" name='chat'class="form-control" placeholder="Enter your chats" aria-label="Recipient's username" aria-describedby="button-addon2">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><img src='static/send_logo.jpg' style="height:27px;"></button>
+  </div>
+</form>
+
+
+{% endif %}
+
+
+
+
+
+{% include "footer.html" %}
